@@ -1,0 +1,540 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Kitty Mission for My Tiny Cute Baby 🐱💛</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+:root {
+  --bg1: #fff4e3;
+  --bg2: #ffd9a0;
+  --accent: #ff9f5b;
+  --accent-dark: #e47e34;
+  --text-main: #3a2520;
+}
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  padding: 0;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: radial-gradient(circle at top, var(--bg2), var(--bg1));
+  color: var(--text-main);
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+}
+.game-wrapper {
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 14px 10px 22px;
+}
+.card {
+  background: rgba(255, 247, 231, 0.97);
+  border-radius: 20px;
+  box-shadow: 0 10px 24px rgba(0,0,0,0.16);
+  padding: 14px 14px 18px;
+  position: relative;
+  overflow: hidden;
+}
+.card::before {
+  content: "🐾 🐾";
+  position: absolute;
+  top: -8px;
+  right: 10px;
+  opacity: 0.25;
+  font-size: 1.6rem;
+}
+.header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.header-icon {
+  font-size: 2.1rem;
+}
+.header-text h1 {
+  font-size: 1.25rem;
+  margin: 0;
+}
+.header-text p {
+  margin: 4px 0 0;
+  font-size: 0.82rem;
+  opacity: 0.85;
+}
+.bars {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.bar-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+}
+.track {
+  flex: 1;
+  height: 9px;
+  border-radius: 999px;
+  background: rgba(255, 210, 152, 0.6);
+  overflow: hidden;
+}
+.fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--accent), var(--accent-dark));
+  transition: width 0.2s ease-out;
+}
+.label {
+  min-width: 75px;
+  text-align: right;
+  font-weight: 600;
+}
+.instructions {
+  margin-top: 10px;
+  font-size: 0.9rem;
+  background: rgba(255,233,197,0.95);
+  border-radius: 12px;
+  padding: 8px 9px;
+  text-align: left;
+}
+.instructions strong {
+  font-size: 0.96rem;
+}
+.grid {
+  margin-top: 14px;
+  background: linear-gradient(135deg, #ffe5ba, #ffd1a6);
+  border-radius: 18px;
+  padding: 10px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+.hole {
+  background: rgba(255, 247, 231, 0.96);
+  border-radius: 16px;
+  height: 86px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.13);
+}
+.cat {
+  font-size: 2.4rem;
+  opacity: 0;
+  transform: translateY(10px) scale(0.6);
+  transition: opacity 0.18s ease-out, transform 0.18s ease-out;
+  cursor: pointer;
+  user-select: none;
+}
+.cat.visible {
+  opacity: 1;
+  transform: translateY(0px) scale(1);
+}
+.cat.good { /* orange cat */ }
+.cat.bad { filter: grayscale(0.3) contrast(0.95); }
+
+.hole.hit-good {
+  animation: popGood 0.22s ease-out;
+}
+.hole.hit-bad {
+  animation: shakeBad 0.25s ease-out;
+}
+@keyframes popGood {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.08); }
+  100% { transform: scale(1); }
+}
+@keyframes shakeBad {
+  0% { transform: translateX(0); }
+  25% { transform: translateX(-3px); }
+  50% { transform: translateX(3px); }
+  75% { transform: translateX(-2px); }
+  100% { transform: translateX(0); }
+}
+
+.footer {
+  margin-top: 9px;
+  font-size: 0.78rem;
+  opacity: 0.7;
+  text-align: center;
+}
+
+/* Overlay */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(circle at top, #ffcf99 0, #ffb37b 35%, #f28b82 100%);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 18px 12px 22px;
+  z-index: 30;
+}
+.overlay-inner {
+  max-width: 480px;
+  width: 100%;
+  background: rgba(255,250,242,0.98);
+  border-radius: 22px;
+  padding: 18px 16px 18px;
+  box-shadow: 0 18px 35px rgba(0,0,0,0.35);
+  text-align: center;
+  position: relative;
+}
+.overlay-inner::before {
+  content: "🐾";
+  position: absolute;
+  left: 12px;
+  top: 10px;
+  opacity: 0.3;
+}
+.overlay-inner::after {
+  content: "🐾";
+  position: absolute;
+  right: 12px;
+  bottom: 8px;
+  opacity: 0.35;
+}
+.overlay-cats {
+  font-size: 2.3rem;
+  margin-bottom: 8px;
+}
+.overlay-title {
+  font-size: 1.15rem;
+  margin: 0 0 6px;
+}
+.overlay-sub {
+  font-size: 0.9rem;
+  margin: 0 0 8px;
+  opacity: 0.9;
+}
+.poem {
+  font-size: 0.98rem;
+  line-height: 1.5rem;
+  white-space: pre-line;
+  margin-top: 6px;
+}
+.stats-line {
+  margin-top: 8px;
+  font-size: 0.85rem;
+  opacity: 0.85;
+}
+.btn-row {
+  margin-top: 12px;
+  display: flex;
+  justify-content: center;
+}
+.btn {
+  border: none;
+  outline: none;
+  border-radius: 999px;
+  padding: 8px 18px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  background: linear-gradient(90deg, var(--accent), var(--accent-dark));
+  color: #ffffff;
+  box-shadow: 0 6px 14px rgba(0,0,0,0.25);
+}
+.btn:active {
+  transform: translateY(1px) scale(0.98);
+  box-shadow: 0 3px 7px rgba(0,0,0,0.28);
+}
+.close-hint {
+  margin-top: 8px;
+  font-size: 0.78rem;
+  opacity: 0.7;
+}
+
+/* Small screens tweaks */
+@media (max-width: 380px) {
+  .grid {
+    gap: 6px;
+  }
+  .hole {
+    height: 78px;
+    border-radius: 14px;
+  }
+  .cat {
+    font-size: 2.1rem;
+  }
+}
+</style>
+</head>
+<body>
+<div class="game-wrapper">
+  <div class="card">
+    <div class="header">
+      <div class="header-icon">🐱💛</div>
+      <div class="header-text">
+        <h1>Kitty Mission: Little Sophie</h1>
+        <p>Catch the orange cutie cats, dodge the grumpy ones, unlock your secret love poem.</p>
+      </div>
+    </div>
+
+    <div class="bars">
+      <div class="bar-row">
+        <div class="track">
+          <div class="fill" id="progressScore"></div>
+        </div>
+        <div class="label" id="scoreLabel">0 / 15</div>
+      </div>
+      <div class="bar-row">
+        <div class="track">
+          <div class="fill" id="progressTime"></div>
+        </div>
+        <div class="label" id="timeLabel">30s</div>
+      </div>
+    </div>
+
+    <div class="instructions">
+      <strong>How to play, my love 🐾</strong><br>
+      Tap the <strong>orange cute cats</strong> 🐱🧡 to score cuddles.<br>
+      <strong>Avoid the grumpy grey cats</strong> 😾, they’re hating on us fr.<br>
+      Hit <strong>15 cuddles</strong> before time runs out to see your surprise. You got this still. 💛
+    </div>
+
+    <div class="grid" id="grid"></div>
+
+    <div class="footer">
+      Ps. Even if you miss bare cats, you still win, ’cause you’re my G forever and your face card never declines.
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="overlay">
+  <div class="overlay-inner">
+    <div class="overlay-cats">🐱🧡🐱🧡🐱</div>
+    <h2 class="overlay-title">For my little Sophie, my tiny cute baby 💛</h2>
+    <p class="overlay-sub">You finished the kitty mission. Now here’s the truth, straight from my heart:</p>
+
+    <div class="poem" id="poemText">
+In your smile my mind goes quiet,
+In your laugh my whole world chills.
+Little cutie pie, my tiny baby,
+You’re the peace to all my feels.
+
+Face card valid, forever certified,
+Body snatched, you’re actually unreal.
+Hottest little baby on this planet,
+That’s you, and that’s how I feel.
+
+My little Sophie, softest blessing,
+Most precious soul I’ve ever known.
+You’re my G forever, no break,
+My home, my heart, my favourite home.
+
+I love you still, and always will,
+From now ’til the end of time.
+Tiny cute baby, my orange queen,
+I’m so, so blessed that you are mine. 💛
+    </div>
+
+    <div class="stats-line" id="statsLine"></div>
+
+    <div class="btn-row">
+      <button class="btn" id="playAgain">Run it again 🔁</button>
+    </div>
+    <div class="close-hint">
+      You can close this and chase more kitties any time, but this message is permanent still fam. 🐾
+    </div>
+  </div>
+</div>
+
+<script>
+(function() {
+  const grid = document.getElementById('grid');
+  const progressScore = document.getElementById('progressScore');
+  const progressTime = document.getElementById('progressTime');
+  const scoreLabel = document.getElementById('scoreLabel');
+  const timeLabel = document.getElementById('timeLabel');
+  const overlay = document.getElementById('overlay');
+  const statsLine = document.getElementById('statsLine');
+  const playAgainBtn = document.getElementById('playAgain');
+
+  const targetScore = 15;
+  const gameDuration = 30000; // 30 seconds
+  const tickSpeed = 800; // how often cats move (ms)
+
+  let score = 0;
+  let tapsGood = 0;
+  let tapsBad = 0;
+  let timeLeft = gameDuration;
+  let gameTimer = null;
+  let catTimer = null;
+  let gameOver = false;
+
+  const holes = [];
+
+  function createGrid() {
+    grid.innerHTML = "";
+    for (let i = 0; i < 9; i++) {
+      const hole = document.createElement('div');
+      hole.className = 'hole';
+
+      const cat = document.createElement('div');
+      cat.className = 'cat';
+      cat.dataset.type = 'none';
+
+      hole.appendChild(cat);
+      grid.appendChild(hole);
+      holes.push({ hole, cat });
+
+      cat.addEventListener('click', function(e) {
+        e.stopPropagation();
+        handleCatTap(cat, hole);
+      });
+    }
+  }
+
+  function handleCatTap(cat, hole) {
+    if (!cat.classList.contains('visible') || gameOver) return;
+
+    const type = cat.dataset.type;
+    if (type === 'good') {
+      score++;
+      tapsGood++;
+      hole.classList.remove('hit-bad');
+      hole.classList.add('hit-good');
+      setTimeout(() => hole.classList.remove('hit-good'), 200);
+    } else if (type === 'bad') {
+      tapsBad++;
+      hole.classList.remove('hit-good');
+      hole.classList.add('hit-bad');
+      setTimeout(() => hole.classList.remove('hit-bad'), 220);
+    }
+
+    hideCat(cat);
+    updateScore();
+  }
+
+  function hideCat(cat) {
+    cat.classList.remove('visible');
+    cat.dataset.type = 'none';
+  }
+
+  function clearCats() {
+    holes.forEach(({ cat }) => hideCat(cat));
+  }
+
+  function spawnCatsTick() {
+    if (gameOver) return;
+
+    clearCats();
+
+    // pick 1–2 random positions
+    const howMany = Math.random() < 0.4 ? 2 : 1;
+    const indices = [];
+    while (indices.length < howMany) {
+      const idx = Math.floor(Math.random() * holes.length);
+      if (!indices.includes(idx)) indices.push(idx);
+    }
+
+    indices.forEach(idx => {
+      const { cat } = holes[idx];
+      // decide if good or bad
+      const isGood = Math.random() < 0.7; // 70% good, 30% bad
+      cat.dataset.type = isGood ? 'good' : 'bad';
+      cat.textContent = isGood ? '🐱' : '😾';
+      cat.classList.add('visible');
+    });
+  }
+
+  function updateScore() {
+    scoreLabel.textContent = score + " / " + targetScore;
+    const pct = Math.min(100, (score / targetScore) * 100);
+    progressScore.style.width = pct + "%";
+
+    if (score >= targetScore && !gameOver) {
+      endGame(true);
+    }
+  }
+
+  function updateTime(delta) {
+    timeLeft -= delta;
+    if (timeLeft < 0) timeLeft = 0;
+    const pct = 100 - (timeLeft / gameDuration) * 100;
+    progressTime.style.width = pct + "%";
+    const seconds = Math.ceil(timeLeft / 1000);
+    timeLabel.textContent = seconds + "s";
+
+    if (timeLeft <= 0 && !gameOver) {
+      endGame(false);
+    }
+  }
+
+  function startGame() {
+    score = 0;
+    tapsGood = 0;
+    tapsBad = 0;
+    timeLeft = gameDuration;
+    gameOver = false;
+    progressScore.style.width = "0%";
+    progressTime.style.width = "0%";
+    scoreLabel.textContent = "0 / " + targetScore;
+    timeLabel.textContent = "30s";
+    clearCats();
+
+    if (gameTimer) clearInterval(gameTimer);
+    if (catTimer) clearInterval(catTimer);
+
+    const startTime = Date.now();
+    let lastTime = startTime;
+
+    gameTimer = setInterval(() => {
+      const now = Date.now();
+      const delta = now - lastTime;
+      lastTime = now;
+      updateTime(delta);
+    }, 200);
+
+    catTimer = setInterval(spawnCatsTick, tickSpeed);
+    spawnCatsTick();
+  }
+
+  function endGame(hitTarget) {
+    gameOver = true;
+    clearInterval(gameTimer);
+    clearInterval(catTimer);
+    gameTimer = null;
+    catTimer = null;
+    clearCats();
+
+    let line = "";
+    if (hitTarget) {
+      line = "You caught " + score + " cute cats (" + tapsGood + " good taps, " + tapsBad + " ops moments). You smashed it, still. 💛";
+    } else {
+      line = "Time ran out with " + score + " cuddles (" + tapsGood + " good taps, " + tapsBad + " ops moments)… but you still fully win ’cause you’re my G forever.";
+    }
+    statsLine.textContent = line;
+
+    overlay.style.display = 'flex';
+  }
+
+  playAgainBtn.addEventListener('click', function() {
+    overlay.style.display = 'none';
+    startGame();
+  });
+
+  // Close overlay if user taps outside inner card
+  overlay.addEventListener('click', function(e) {
+    if (e.target === overlay) {
+      overlay.style.display = 'none';
+      startGame();
+    }
+  });
+
+  // init
+  createGrid();
+  startGame();
+})();
+</script>
+</body>
+</html>
